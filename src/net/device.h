@@ -9,7 +9,7 @@ class Device;
 
 class Device {
  public:
-  static Device getDevice(const std::string &name);
+  static Device getDevice(const std::string &name, const std::string &ipAddress);
 
   std::string getDeviceName() const { return deviceName_; }
   bpf_u_int32 getNetwork() const { return network_; }
