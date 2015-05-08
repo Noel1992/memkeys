@@ -10,7 +10,7 @@ PcapLive::PcapLive(const Config * cfg)
       config(cfg),
       // TODO this should be provided to constructor, otherwise exception thrown
       // in constructor
-      device(Device::getDevice(cfg->getInterface()))
+      device(Device::getDevice(cfg->getInterface(), cfg->getAddress()))
 {
   logger->debug(CONTEXT, "Using device %s for capture", getInterfaceC());
 }

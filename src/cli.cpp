@@ -15,15 +15,17 @@ namespace mckeys {
 static const struct option longopts[] = {
   {"discard", required_argument, 0, 'd'},
   {"interface", required_argument, 0, 'i'},
+  {"address", required_argument, 0, 'a'},
   {"port", required_argument, 0, 'p'},
   {"refresh", required_argument, 0, 'r'},
   {"help", no_argument, 0, 'h'},
   {"verbose", no_argument, 0, 'v'},
   {"version", no_argument, 0, 'V'},
   {"logfile", required_argument, 0, 'l'},
-  {"report", required_argument, 0, 'R'}
+  {"report", required_argument, 0, 'R'},
+  {"capture", required_argument, 0, 'C'}
 };
-static const char * argp = "d:i:l:p:r:R:hvV";
+static const char * argp = "d:i:a:l:p:r:R:C:hvV";
 
 using std::cout;            using std::endl;
 using std::string;          using std::ostringstream;
@@ -37,24 +39,30 @@ string Cli::help(const char * progname) {
                    "Discard keys where req/s rate is below THRESH", "THRESH");
   txt << mkHelpDoc(longopts[1],
                    "Network interface to capture traffic on (required)", "NIC");
+  txt << mkHelpDoc(longopts[2],
+                   "IPv4 address to capture traffic on (optional)", "IPv4");
   txt << mkHelpDoc(
-          longopts[2],
+          longopts[3],
           "Network port to capture memcache traffic on (default 11211)",
           "PORT");
   txt << mkHelpDoc(
-          longopts[3],
+          longopts[4],
           "Refresh the stats display every INTERVAL ms (default 500)",
           "INTERVAL");
-  txt << mkHelpDoc(longopts[7], "Output logs to FILE", "FILE");
+  txt << mkHelpDoc(longopts[8], "Output logs to FILE", "FILE");
   txt << mkHelpDoc(
-          longopts[8],
+          longopts[9],
           "Output data in REPORT format (CSV or curses, default curses)",
           "REPORT");
+  txt << mkHelpDoc(
+          longopts[10],
+          "Capture memcached command type (set or get, default get)",
+          "CAPTURE_TYPE");
   txt << endl;
-  txt << mkHelpDoc(longopts[4], "This help", "");
-  txt << mkHelpDoc(longopts[5],
+  txt << mkHelpDoc(longopts[5], "This help", "");
+  txt << mkHelpDoc(longopts[6],
                    "Increase verbosity. May be used multiple times.", "");
-  txt << mkHelpDoc(longopts[6], "Show program info and exit.", "");
+  txt << mkHelpDoc(longopts[7], "Show program info and exit.", "");
   return txt.str();
 }
 
@@ -76,6 +84,9 @@ void Cli::parse(int argc, char ** argv, Config * cfg) {
       case 'i':
         cfg->setInterface(optarg);
         break;
+      case 'a':
+        cfg->setAddress(optarg);
+        break;
       case 'l':
         cfg->setLogfile(optarg);
         break;
@@ -87,6 +98,9 @@ void Cli::parse(int argc, char ** argv, Config * cfg) {
         break;
       case 'R':
         cfg->setReportType(optarg);
+        break;
+      case 'C':
+        cfg->setCaptureType(optarg);
         break;
       case 'h':
         cout << Cli::help(progname);

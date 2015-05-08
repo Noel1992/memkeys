@@ -17,7 +17,7 @@ using namespace std;
  */
 static char errbuf[PCAP_ERRBUF_SIZE] = {0};
 
-Device Device::getDevice(const string &name)
+Device Device::getDevice(const string &name, const string &ipAddress)
 {
   pcap_if_t *alldevs;
   bpf_u_int32 address = 0;
@@ -34,11 +34,22 @@ Device Device::getDevice(const string &name)
       if (d->flags & PCAP_IF_LOOPBACK) {
         loopback = true;
       }
-      for (pcap_addr_t *a = d->addresses; a != NULL; a = a->next) {
-        if (a->addr->sa_family == AF_INET) {
-          address = ((struct sockaddr_in*)(a->addr))->sin_addr.s_addr;
+      if (ipAddress.length() > 0) {
+        struct in_addr expectAddress;
+        if (inet_aton(ipAddress.c_str(), &expectAddress) == 0) {
+          throw MemkeysException(string("Invalid address: ") + ipAddress);
+        }
+        address = expectAddress.s_addr;
+        break;
+      } else {
+        for (pcap_addr_t *a = d->addresses; a != NULL; a = a->next) {
+          if (a->addr->sa_family == AF_INET) {
+            address = ((struct sockaddr_in*)(a->addr))->sin_addr.s_addr;
+            break;
+          }
         }
       }
+      break;
     }
   }
   pcap_freealldevs(alldevs);

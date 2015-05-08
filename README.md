@@ -14,10 +14,12 @@ Build Status: [![Build Status](https://travis-ci.org/bmatheny/memkeys.png?branch
     Usage: memkeys -i NIC [options]
         -d, --discard=THRESH        Discard keys where req/s rate is below THRESH
         -i, --interface=NIC         Network interface to capture traffic on (required)
+        -a, --address=IPv4          IPv4 address to capture traffic on (optional)
         -p, --port=PORT             Network port to capture memcache traffic on (default 11211)
         -r, --refresh=INTERVAL      Refresh the stats display every INTERVAL ms (default 500)
         -l, --logfile=FILE          Output logs to FILE
         -R, --report=REPORT         Output data in REPORT format (CSV or curses, default curses)
+        -C, --capture=CAPTURE_TYPE  Capture memcached command type (set or get, default get)
 
         -h, --help                  This help
         -v, --verbose               Increase verbosity. May be used multiple times.

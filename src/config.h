@@ -4,6 +4,7 @@
 #include <string>
 #include "logging/logger.h"
 #include "report/report_type.h"
+#include "net/capture_type.h"
 
 namespace mckeys {
 
@@ -18,6 +19,9 @@ class Config
 
   void setInterface(const std::string &value);
   std::string getInterface() const;
+
+  void setAddress(const std::string &value);
+  std::string getAddress() const;
 
   void setLogfile(const std::string &value);
   std::string getLogfile() const;
@@ -34,6 +38,9 @@ class Config
 
   void setReportType(const std::string &value);
   ReportType getReportType() const;
+
+  void setCaptureType(const std::string &type);
+  CaptureType getCaptureType() const;
 
   int getSnapLength() const
   { return _snapLength; }
@@ -53,6 +60,7 @@ class Config
 
   double discardThreshold;
   std::string interface;
+  std::string address;
   bool _isPromiscuous;
   uint16_t port;
   int _readTimeout;
@@ -61,6 +69,7 @@ class Config
   LoggerPtr logger;
   std::string logfile;
   ReportType reportType;
+  CaptureType captureType;
 };
 
 } // end namespace
