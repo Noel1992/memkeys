@@ -15,7 +15,7 @@ CaptureEngine::CaptureEngine(const Config * config, const Pcap * session)
       session(session),
       barrier(new mqueue<Elem>()),
       stats(new Stats(config, barrier)),
-      report(config->getReportType().makeReport(config, session, stats)),
+      report(config->getReportType().makeReport(config, this, stats)),
       _is_terminated(false),
       queue_count(3),
       packets(),
@@ -70,6 +70,7 @@ void CaptureEngine::shutdown()
   _is_terminated = true;
   stats->shutdown();
   report->shutdown();
+  const_cast<Pcap*>(session)->stopCapture();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
