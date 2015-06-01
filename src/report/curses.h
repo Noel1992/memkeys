@@ -2,7 +2,7 @@
 #define _REPORT_CURSES_H
 
 #include "config.h"
-#include "net/pcap.h"
+#include "net/capture_engine.h"
 #include "report/report.h"
 #include "util/stats.h"
 
@@ -19,7 +19,7 @@ class CursesReport : public Report
   typedef std::vector<std::string> StatColumns;
   typedef std::map<char, std::string> CommandMap;
 
-  CursesReport(const Config* cfg, const Pcap* session, Stats* stats);
+  CursesReport(const Config* cfg, const CaptureEngine* engine, Stats* stats);
   virtual ~CursesReport();
 
   virtual void render();
@@ -38,7 +38,7 @@ class CursesReport : public Report
   void renderInit(); // initialize rendering system - only once before first rendering
   void renderDone(); // tear down render system
   void initFooterText(); // done once by renderInit
-  const Pcap* session;
+  const CaptureEngine* engine;
   Stats* stats;
   int statColumnWidth;
   uint32_t keyColumnWidth;
