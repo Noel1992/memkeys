@@ -12,9 +12,9 @@ namespace mckeys {
 
 using namespace std;
 
-CursesReport::CursesReport(const Config* cfg, const Pcap* session, Stats* stats)
+CursesReport::CursesReport(const Config* cfg, const CaptureEngine* engine, Stats* stats)
   : Report(cfg, Logger::getLogger("cursesReport")),
-    session(session),
+    engine(engine),
     stats(stats),
     statColumnWidth(10),
     keyColumnWidth(0),
@@ -119,7 +119,7 @@ void CursesReport::renderStats(deque<Stat> q, uint32_t qsize) {
   uint32_t i = 0;
   uint32_t maxlines = LINES - 3 - 1;
 
-  string pstats = session->getStatsString();
+  string pstats = engine->getStatsString();
   ostringstream summary;
   ostringstream fwSummary;
 

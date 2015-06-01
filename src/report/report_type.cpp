@@ -40,11 +40,11 @@ bool ReportType::operator==(const ReportType &other) const {
   return (getName() == other.getName());
 }
 
-Report* ReportType::makeReport(const Config* cfg, const Pcap* sess, Stats* stats) {
+Report* ReportType::makeReport(const Config* cfg, const CaptureEngine* engine, Stats* stats) {
   if (cfg->getReportType() == ReportType::NCURSES) {
-    return new CursesReport(cfg, sess, stats);
+    return new CursesReport(cfg, engine, stats);
   } else if (cfg->getReportType() == ReportType::CSV) {
-    return new CsvReport(cfg, sess, stats);
+    return new CsvReport(cfg, engine, stats);
   } else {
     throw range_error("Unsupported report type " + cfg->getReportType().getName());
   }

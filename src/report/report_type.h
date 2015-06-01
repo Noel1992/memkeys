@@ -7,7 +7,7 @@ namespace mckeys {
 
 // forward declarations because shit we have some recursive dependencies
 class Config;
-class Pcap;
+class CaptureEngine;
 class Stats;
 class Report;
 
@@ -19,7 +19,7 @@ class ReportType
 
   static ReportType fromString(const std::string &name);
 
-  Report* makeReport(const Config* cfg, const Pcap* sess, Stats* stats);
+  Report* makeReport(const Config* cfg, const CaptureEngine* engine, Stats* stats);
   std::string getName() const;
 
   bool operator==(const ReportType &other) const;

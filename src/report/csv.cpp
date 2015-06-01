@@ -5,11 +5,10 @@ namespace mckeys {
 
 using namespace std;
 
-CsvReport::CsvReport(const Config* cfg, const Pcap* session, Stats* stats)
+CsvReport::CsvReport(const Config* cfg, const CaptureEngine* engine, Stats* stats)
   : Report(cfg, Logger::getLogger("csvReport")),
-    stats(stats)
+    engine(engine), stats(stats)
 {
-  (void)session;
   if (state.checkAndSet(state_NEW, state_STARTING)) {
     report_thread = thread(&CsvReport::render, this);
   } else {
@@ -41,6 +40,8 @@ void CsvReport::render()
         printHeader();
       } else {
         cout << ",,,,,," << endl;
+        const_cast<CaptureEngine*>(engine)->shutdown();
+        break;
       }
       renderStats(q);
     }
