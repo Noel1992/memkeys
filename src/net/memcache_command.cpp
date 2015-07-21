@@ -92,25 +92,40 @@ MemcacheCommand::MemcacheCommand()
   : cmdType_(MC_UNKNOWN),
     sourceAddress_(),
     destinationAddress_(),
-    commandName_(),
-    objectKey_(),
-    objectSize_(0)
+    commandName_()
 {}
 
 // protected constructor
 MemcacheCommand::MemcacheCommand(const memcache_command_t cmdType,
                                  const string sourceAddress,
                                  const string destinationAddress,
-                                 const string commandName,
-                                 const string objectKey,
+                                 const string commandName) 
+    : cmdType_(cmdType),
+      sourceAddress_(sourceAddress),
+      destinationAddress_(destinationAddress),
+      commandName_(commandName)
+{}
+
+
+MemcacheCommand::MemcacheCommand(const memcache_command_t cmdType,
+                                 const std::string sourceAddress,
+                                 const std::string destinationAddress,
+                                 const std::string commandName,
+                                 const std::string objectKey,
                                  uint32_t objectSize)
     : cmdType_(cmdType),
       sourceAddress_(sourceAddress),
       destinationAddress_(destinationAddress),
-      commandName_(commandName),
-      objectKey_(objectKey),
-      objectSize_(objectSize)
-{}
+      commandName_(commandName)
+{
+  pushObject(objectKey, objectSize);
+}
+
+void MemcacheCommand::pushObject(const std::string objectKey, uint32_t objectSize)
+{
+  objectKeyList_.push_back(objectKey);
+  objectSizeList_.push_back(objectSize);
+}
 
 // static protected
 MemcacheCommand MemcacheCommand::makeRequestCommand(u_char* data,
@@ -151,25 +166,33 @@ MemcacheCommand MemcacheCommand::makeResponseCommand(u_char *data,
 {
   // VALUE <key> <flags> <bytes> [<cas unique>]\r\n
   static string commandName = "get";
-  static pcrecpp::RE re("VALUE (\\S+) \\d+ (\\d+)",
+  static pcrecpp::RE re("(VALUE (\\S+) \\d+ (\\d+))",
                         pcrecpp::RE_Options(PCRE_MULTILINE));
+  static int minimum_length = 11; // 'VALUE a 0 1'
+
+  string whole;
   string key;
   int size = -1;
-  string input = "";
 
-  for (int i = 0; i < length; i++) {
-    int cid = (int)data[i];
-    if (isprint(cid) || cid == 10 || cid == 13) {
-      input += static_cast<char>(cid);
+  MemcacheCommand mc(MC_RESPONSE, sourceAddress, destinationAddress, commandName);
+  int offset = 0;
+  while (length - offset >= minimum_length) {
+    //Logger::getLogger("command")->debug(CONTEXT, "%.*s", length, data + offset);
+    if (!re.PartialMatch(data + offset, &whole, &key, &size)) {
+      break;
+    }
+    //Logger::getLogger("command")->debug(whole);
+    //Logger::getLogger("command")->debug(key);
+    if (size >= 0) {
+      mc.pushObject(key, size);
+      offset += whole.length() + 2 + size + 2; // 2 for '\r\n', 2 for '\r\n'
+    } else {
+      break;
     }
   }
-  if (input.length() < 11) { // VALUE k 0 1
-    return MemcacheCommand();
-  }
 
-  re.PartialMatch(input, &key, &size);
-  if (size >= 0) {
-    return MemcacheCommand(MC_RESPONSE, sourceAddress, destinationAddress, commandName, key, size);
+  if (mc.getObjectNumber() > 0) {
+    return mc;
   } else {
     return MemcacheCommand();
   }
