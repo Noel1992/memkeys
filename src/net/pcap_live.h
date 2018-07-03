@@ -9,14 +9,13 @@ namespace mckeys {
 
 class PcapLive : public Pcap
 {
- public: 
+ public:
   PcapLive(const Config * cfg);
   virtual ~PcapLive();
 
   Device getDevice() const
   { return device; }
 
-  const char * getInterfaceC() { return getDevice().getDeviceName().c_str(); }
   std::string getInterface() const
   { return getDevice().getDeviceName(); }
 
