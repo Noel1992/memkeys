@@ -16,6 +16,11 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None Debug Release." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-DDEBUGGING)
+    message(STATUS "build debugging")
+endif()
+
 set(COMMON_FLAGS "-Wall -Wextra -Wno-unused-parameter -pedantic -pthread")
 
 set(CMAKE_CXX_FLAGS_DEBUG "-std=c++0x -g3 -O0 ${COMMON_FLAGS}" CACHE STRING "CXX DEBUG FLAGS" FORCE)
